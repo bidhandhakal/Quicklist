@@ -5,6 +5,7 @@ import '../../data/dummy_categories.dart';
 import '../../config/routes.dart';
 import '../widgets/task_tile.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/native_ad_widget.dart';
 import '../widgets/banner_ad_widget.dart';
 
 class CategoryScreen extends StatelessWidget {
@@ -21,9 +22,25 @@ class CategoryScreen extends StatelessWidget {
               builder: (context, taskController, child) {
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: DummyCategories.categories.length,
+                  itemCount:
+                      DummyCategories.categories.length + 1, // +1 for native ad
                   itemBuilder: (context, index) {
-                    final category = DummyCategories.categories[index];
+                    // Show native ad after 3rd category
+                    if (index == 3) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: NativeAdWidget(
+                          screenId: 'category_screen_category_list',
+                        ),
+                      );
+                    }
+
+                    // Adjust index for categories after ad
+                    final categoryIndex = index > 3 ? index - 1 : index;
+                    final category = DummyCategories.categories[categoryIndex];
                     final categoryTasks = taskController.getTasksByCategory(
                       category.id,
                     );
@@ -135,7 +152,6 @@ class CategoryScreen extends StatelessWidget {
               },
             ),
           ),
-          const BannerAdWidget(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -214,15 +230,34 @@ class CategoryDetailScreen extends StatelessWidget {
 
                 return ListView.builder(
                   padding: const EdgeInsets.only(bottom: 80),
-                  itemCount: tasks.length,
+                  itemCount: tasks.length + 1, // +1 for native ad
                   itemBuilder: (context, index) {
+                    // Show native ad after 4th task
+                    if (index == 4 && tasks.length > 4) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: NativeAdWidget(
+                          screenId: 'category_screen_task_list',
+                        ),
+                      );
+                    }
+
+                    // Adjust index for tasks after ad
+                    final taskIndex = index > 4 ? index - 1 : index;
+                    if (taskIndex >= tasks.length) {
+                      return const SizedBox.shrink();
+                    }
+
                     return TaskTile(
-                      task: tasks[index],
+                      task: tasks[taskIndex],
                       onTap: () {
                         Navigator.pushNamed(
                           context,
                           AppRoutes.editTask,
-                          arguments: tasks[index].id,
+                          arguments: tasks[taskIndex].id,
                         );
                       },
                     );
@@ -231,7 +266,8 @@ class CategoryDetailScreen extends StatelessWidget {
               },
             ),
           ),
-          const BannerAdWidget(),
+          // Banner Ad at bottom
+          const BannerAdWidget(screenId: 'category_screen'),
         ],
       ),
       floatingActionButton: FloatingActionButton(

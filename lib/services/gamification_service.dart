@@ -23,6 +23,9 @@ class GamificationService extends ChangeNotifier {
   Streak? _streak;
   List<Achievement> _achievements = [];
 
+  // Callback for when an achievement is unlocked (for showing ads)
+  Function()? onAchievementUnlocked;
+
   // Getters
   DailyGoal get dailyGoal => _dailyGoal ?? DailyGoal();
   Streak get streak => _streak ?? Streak();
@@ -327,6 +330,8 @@ class GamificationService extends ChangeNotifier {
         achievement.unlock();
         await achievement.save();
         anyUnlocked = true;
+        // Trigger callback for achievement unlocked
+        onAchievementUnlocked?.call();
       }
     }
 

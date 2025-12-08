@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'config/theme.dart';
 import 'config/routes.dart';
@@ -7,11 +8,13 @@ import 'services/category_service.dart';
 import 'services/notification_service.dart';
 import 'services/task_reminder_service.dart';
 import 'services/home_widget_service.dart';
+import 'services/consent_manager.dart';
 import 'services/ad_service.dart';
 import 'services/app_open_ad_manager.dart';
 import 'services/app_lifecycle_reactor.dart';
 import 'services/interstitial_ad_manager.dart';
 import 'services/rewarded_ad_manager.dart';
+import 'services/screen_ad_manager.dart';
 import 'services/gamification_service.dart';
 import 'controllers/task_controller.dart';
 
@@ -34,30 +37,65 @@ Future<void> _initializeServices() async {
   // Initialize category service (must be after Hive init)
   await CategoryService().init();
 
-  // Initialize notifications
-  await NotificationService.instance.init();
-  await NotificationService.instance.requestPermissions();
-
-  // Initialize reminder service
-  TaskReminderService.instance.init();
-
-  // Initialize home widget
-  await HomeWidgetService.instance.initialize();
-
-  // Initialize gamification service
+  // Initialize gamification service (must be after Hive init)
   await GamificationService.instance.init();
 
-  // Initialize Mobile Ads
-  await AdService.initialize();
+  // Parallelize independent service initializations
+  await Future.wait([
+    NotificationService.instance.init(),
+    HomeWidgetService.instance.initialize(),
+    _initializeAdsInBackground(), // Start ad loading in parallel
+  ]);
 
-  // Load initial app open ad
-  await AppOpenAdManager().loadAd();
+  // Request notification permissions (non-blocking)
+  NotificationService.instance.requestPermissions();
 
-  // Load initial interstitial ad
-  await InterstitialAdManager().loadAd();
+  // Initialize reminder service (synchronous, lightweight)
+  TaskReminderService.instance.init();
+}
 
-  // Load initial rewarded ad
-  await RewardedAdManager().loadAd();
+// Load ads in background after app starts
+Future<void> _initializeAdsInBackground() async {
+  // Initialize consent manager and show consent form if required (GDPR/CCPA)
+  final canShowAds = await ConsentManager.instance.initialize();
+
+  // Only initialize ads if user has given consent
+  if (canShowAds) {
+    await AdService.initialize();
+
+    // Immediately start loading all ads in parallel (don't await)
+    // This fires all requests simultaneously for maximum speed
+    Future.microtask(() {
+      // Preload banner ads for all screens except home
+      ScreenAdManager.instance.preloadBannerAd('calendar_screen');
+      ScreenAdManager.instance.preloadBannerAd('add_task_screen');
+      ScreenAdManager.instance.preloadBannerAd('settings_screen');
+      ScreenAdManager.instance.preloadBannerAd('category_screen');
+      ScreenAdManager.instance.preloadBannerAd('gamification_screen');
+    });
+
+    Future.microtask(() {
+      // Preload native ads
+      ScreenAdManager.instance.preloadNativeAd('settings_screen');
+      ScreenAdManager.instance.preloadNativeAd('home_screen');
+      ScreenAdManager.instance.preloadNativeAd('gamification_screen_stats');
+      ScreenAdManager.instance.preloadNativeAd(
+        'gamification_screen_achievements',
+      );
+      ScreenAdManager.instance.preloadNativeAd('category_screen_category_list');
+    });
+
+    // Load full-screen ads in parallel
+    Future.microtask(() {
+      AppOpenAdManager().loadAd();
+      InterstitialAdManager().loadAd();
+      RewardedAdManager().loadAd();
+    });
+  } else {
+    if (kDebugMode) {
+      print('Ads not initialized: User consent required or denied');
+    }
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -69,10 +107,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late AppLifecycleReactor _appLifecycleReactor;
+  final TaskController _taskController = TaskController();
 
   @override
   void initState() {
     super.initState();
+
+    // Initialize TaskController asynchronously
+    _taskController.init();
 
     // Initialize app lifecycle reactor for app open ads
     _appLifecycleReactor = AppLifecycleReactor(
@@ -90,9 +132,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => TaskController()..init()),
-      ],
+      providers: [ChangeNotifierProvider.value(value: _taskController)],
       child: MaterialApp(
         title: 'QuickList',
         debugShowCheckedModeBanner: false,

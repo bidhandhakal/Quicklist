@@ -27,15 +27,34 @@ class AdService {
       'ca-app-pub-3940256099942544/5224354917'; // Google test ad ID
   // Production: Add your production rewarded ad unit ID here
 
+  // Android Native Ad Unit ID - Using test ad ID
+  static const String _androidNativeAdUnitId =
+      'ca-app-pub-3940256099942544/2247696110'; // Google test ad ID
+  // Production: Add your production native ad unit ID here
+
   static String get bannerAdUnitId => _androidBannerAdUnitId;
   static String get appOpenAdUnitId => _androidAppOpenAdUnitId;
   static String get interstitialAdUnitId => _androidInterstitialAdUnitId;
   static String get rewardedAdUnitId => _androidRewardedAdUnitId;
+  static String get nativeAdUnitId => _androidNativeAdUnitId;
 
   // Initialize Mobile Ads SDK - Only for Android
   static Future<void> initialize() async {
     if (Platform.isAndroid) {
       await MobileAds.instance.initialize();
+
+      // Configure request settings for faster ad loading
+      final requestConfiguration = RequestConfiguration(
+        tagForChildDirectedTreatment: TagForChildDirectedTreatment.no,
+        tagForUnderAgeOfConsent: TagForUnderAgeOfConsent.no,
+        maxAdContentRating: MaxAdContentRating.pg,
+      );
+
+      MobileAds.instance.updateRequestConfiguration(requestConfiguration);
+
+      if (kDebugMode) {
+        print('AdService: MobileAds initialized with optimized configuration');
+      }
     }
   }
 
