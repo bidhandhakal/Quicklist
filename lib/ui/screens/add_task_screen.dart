@@ -279,7 +279,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               ),
             ),
           ),
-          const BannerAdWidget(),
+
+          // Banner Ad at bottom
+          const BannerAdWidget(screenId: 'add_task_screen'),
         ],
       ),
     );

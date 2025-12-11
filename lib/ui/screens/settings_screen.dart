@@ -6,6 +6,8 @@ import '../../services/rewarded_ad_manager.dart';
 import '../../controllers/task_controller.dart';
 import '../../utils/constants.dart';
 import '../widgets/widgets.dart';
+import '../widgets/native_ad_widget.dart';
+import '../widgets/banner_ad_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -63,6 +65,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                   ),
                 ),
+
+                const SizedBox(height: 24),
+
+                // Native Ad
+                const NativeAdWidget(screenId: 'settings_screen'),
 
                 const SizedBox(height: 24),
 
@@ -160,6 +167,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
           ),
+          // Banner Ad at bottom
+          const BannerAdWidget(screenId: 'settings_screen'),
         ],
       ),
     );

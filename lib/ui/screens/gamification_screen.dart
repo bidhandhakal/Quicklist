@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../services/gamification_service.dart';
+import '../../services/ad_service.dart';
+import '../../services/interstitial_ad_manager.dart';
 import '../../config/routes.dart';
 import '../../models/achievement_model.dart';
 import '../widgets/achievement_card.dart';
+import '../widgets/native_ad_widget.dart';
 
 class GamificationScreen extends StatefulWidget {
   const GamificationScreen({super.key});
@@ -15,16 +19,46 @@ class _GamificationScreenState extends State<GamificationScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _achievementFilter = 'all'; // 'all', 'unlocked', 'locked'
+  BannerAd? _bannerAd;
+  bool _isBannerAdLoaded = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _loadBannerAd();
+    _setupAchievementListener();
+  }
+
+  void _loadBannerAd() {
+    if (!AdService.isAdsSupported) return;
+
+    _bannerAd = AdService().createBannerAd(
+      onAdLoaded: (ad) {
+        setState(() {
+          _isBannerAdLoaded = true;
+        });
+      },
+      onAdFailedToLoad: (ad, error) {
+        ad.dispose();
+        _bannerAd = null;
+      },
+    );
+    _bannerAd?.load();
+  }
+
+  void _setupAchievementListener() {
+    GamificationService.instance.onAchievementUnlocked = () {
+      // Show interstitial ad when achievement is unlocked
+      InterstitialAdManager().showAd();
+    };
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _bannerAd?.dispose();
+    GamificationService.instance.onAchievementUnlocked = null;
     super.dispose();
   }
 
@@ -58,34 +92,46 @@ class _GamificationScreenState extends State<GamificationScreen>
           );
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2,
-        onTap: (index) {
-          if (index == 2) {
-            // Already on achievements - do nothing
-            return;
-          }
-          switch (index) {
-            case 0:
-              Navigator.pushReplacementNamed(context, AppRoutes.home);
-              break;
-            case 1:
-              Navigator.pushReplacementNamed(context, AppRoutes.category);
-              break;
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.category_rounded),
-            label: 'Categories',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.emoji_events_rounded),
-            label: 'Achievements',
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_isBannerAdLoaded && _bannerAd != null)
+            Container(
+              alignment: Alignment.center,
+              width: _bannerAd!.size.width.toDouble(),
+              height: _bannerAd!.size.height.toDouble(),
+              child: AdWidget(ad: _bannerAd!),
+            ),
+          BottomNavigationBar(
+            currentIndex: 2,
+            onTap: (index) {
+              if (index == 2) {
+                // Already on achievements - do nothing
+                return;
+              }
+              switch (index) {
+                case 0:
+                  Navigator.pushReplacementNamed(context, AppRoutes.home);
+                  break;
+                case 1:
+                  Navigator.pushReplacementNamed(context, AppRoutes.category);
+                  break;
+              }
+            },
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home_rounded),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.category_rounded),
+                label: 'Categories',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.emoji_events_rounded),
+                label: 'Achievements',
+              ),
+            ],
           ),
         ],
       ),
@@ -249,6 +295,9 @@ class _GamificationScreenState extends State<GamificationScreen>
           ),
           const SizedBox(height: 12),
 
+          // Native Ad (AdMob Compliant)
+          const NativeAdWidget(screenId: 'gamification_screen_top'),
+
           // Achievements Summary
           Container(
             padding: const EdgeInsets.all(16),
@@ -341,6 +390,11 @@ class _GamificationScreenState extends State<GamificationScreen>
 
     return Column(
       children: [
+        // Native Ad at top of achievements
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: NativeAdWidget(screenId: 'gamification_screen_achievements'),
+        ),
         // Filter chips
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -555,6 +609,11 @@ class _GamificationScreenState extends State<GamificationScreen>
           theme: theme,
         ),
         const SizedBox(height: 12),
+
+        // Native Ad
+        const NativeAdWidget(screenId: 'gamification_screen_stats'),
+        const SizedBox(height: 12),
+
         _buildStatCard(
           icon: Icons.emoji_events,
           title: 'Daily Goals Achieved',

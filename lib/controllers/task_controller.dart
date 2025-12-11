@@ -175,7 +175,7 @@ class TaskController extends ChangeNotifier {
     if (!task.isCompleted) {
       await _gamificationService.onTaskCompleted();
       _completedTasksCounter++;
-      if (_completedTasksCounter % 5 == 0) {
+      if (_completedTasksCounter % 3 == 0) {
         _adManager.showAd();
       }
     } else {

@@ -10,7 +10,10 @@ class AppOpenAdManager {
 
   AppOpenAd? _appOpenAd;
   bool _isShowingAd = false;
+  bool _isLoadingAd = false;
   DateTime? _appOpenLoadTime;
+  int _loadAttempts = 0;
+  static const int _maxLoadAttempts = 3;
 
   /// Maximum duration allowed between ad load and show
   final Duration maxCacheDuration = const Duration(hours: 4);
@@ -24,27 +27,48 @@ class AppOpenAdManager {
     }
 
     // Don't load if already loading or showing
-    if (_appOpenAd != null || _isShowingAd) {
-      debugPrint('AppOpenAd: Ad already loaded or showing');
+    if (_appOpenAd != null || _isShowingAd || _isLoadingAd) {
+      debugPrint('AppOpenAd: Ad already loaded, loading, or showing');
       return;
     }
 
-    debugPrint('AppOpenAd: Loading ad...');
-    await AppOpenAd.load(
-      adUnitId: AdService.appOpenAdUnitId,
-      request: const AdRequest(),
-      adLoadCallback: AppOpenAdLoadCallback(
-        onAdLoaded: (ad) {
-          debugPrint('AppOpenAd: Ad loaded successfully');
-          _appOpenAd = ad;
-          _appOpenLoadTime = DateTime.now();
-        },
-        onAdFailedToLoad: (error) {
-          debugPrint('AppOpenAd: Failed to load ad: ${error.message}');
-          _appOpenAd = null;
-        },
-      ),
-    );
+    _isLoadingAd = true;
+    debugPrint('AppOpenAd: Loading ad (attempt ${_loadAttempts + 1})...');
+
+    try {
+      await AppOpenAd.load(
+        adUnitId: AdService.appOpenAdUnitId,
+        request: const AdRequest(),
+        adLoadCallback: AppOpenAdLoadCallback(
+          onAdLoaded: (ad) {
+            debugPrint('AppOpenAd: Ad loaded successfully');
+            _appOpenAd = ad;
+            _appOpenLoadTime = DateTime.now();
+            _isLoadingAd = false;
+            _loadAttempts = 0;
+          },
+          onAdFailedToLoad: (error) {
+            debugPrint('AppOpenAd: Failed to load ad: ${error.message}');
+            _appOpenAd = null;
+            _isLoadingAd = false;
+            _loadAttempts++;
+
+            // Retry loading if under max attempts
+            if (_loadAttempts < _maxLoadAttempts) {
+              debugPrint('AppOpenAd: Retrying in 5 seconds...');
+              Future.delayed(const Duration(seconds: 5), loadAd);
+            } else {
+              debugPrint('AppOpenAd: Max load attempts reached');
+              _loadAttempts = 0;
+            }
+          },
+        ),
+      );
+    } catch (e) {
+      debugPrint('AppOpenAd: Exception loading ad: $e');
+      _isLoadingAd = false;
+      _appOpenAd = null;
+    }
   }
 
   /// Check if an ad is available and not expired

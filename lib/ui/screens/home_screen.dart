@@ -6,9 +6,9 @@ import '../../utils/constants.dart';
 import '../../services/gamification_service.dart';
 import '../widgets/task_tile.dart';
 import '../widgets/empty_state.dart';
-import '../widgets/banner_ad_widget.dart';
 import '../widgets/daily_goal_card.dart';
 import '../widgets/streak_card.dart';
+import '../widgets/native_ad_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -82,9 +82,6 @@ class _HomeScreenState extends State<HomeScreen>
                   ],
                 ),
               ),
-
-              // Banner Ad at bottom
-              const BannerAdWidget(),
             ],
           );
         },
@@ -336,15 +333,33 @@ class _HomeScreenState extends State<HomeScreen>
       return EmptyState(icon: icon, title: title, message: message);
     }
 
+    // Insert native ads every 6 tasks
+    final itemsWithAds = <dynamic>[];
+    for (int i = 0; i < tasks.length; i++) {
+      itemsWithAds.add(tasks[i]);
+      // Add native ad after every 6 tasks
+      if ((i + 1) % 6 == 0 && i != tasks.length - 1) {
+        itemsWithAds.add('ad_$i'); // Placeholder for ad
+      }
+    }
+
     return RefreshIndicator(
       onRefresh: () async {
         await taskController.loadTasks();
       },
       child: ListView.builder(
         padding: const EdgeInsets.fromLTRB(0, 8, 0, 80),
-        itemCount: tasks.length,
+        itemCount: itemsWithAds.length,
         itemBuilder: (context, index) {
-          final task = tasks[index];
+          final item = itemsWithAds[index];
+
+          // Show ad
+          if (item is String && item.startsWith('ad_')) {
+            return NativeAdWidget(screenId: 'home_list_$item');
+          }
+
+          // Show task
+          final task = item;
           return TaskTile(
             task: task,
             onTap: () {

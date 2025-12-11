@@ -144,7 +144,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               },
             ),
           ),
-          const BannerAdWidget(),
+          const BannerAdWidget(screenId: 'calendar_screen'),
         ],
       ),
       floatingActionButton: FloatingActionButton(
