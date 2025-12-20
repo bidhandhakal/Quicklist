@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../services/gamification_service.dart';
 import '../../services/ad_service.dart';
@@ -7,6 +8,7 @@ import '../../config/routes.dart';
 import '../../models/achievement_model.dart';
 import '../widgets/achievement_card.dart';
 import '../widgets/native_ad_widget.dart';
+import '../widgets/custom_bottom_nav_bar.dart';
 
 class GamificationScreen extends StatefulWidget {
   const GamificationScreen({super.key});
@@ -69,6 +71,12 @@ class _GamificationScreenState extends State<GamificationScreen>
 
     return Scaffold(
       appBar: AppBar(
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.dark,
+        ),
         title: const Text('Achievements & Stats'),
         bottom: TabBar(
           controller: _tabController,
@@ -77,6 +85,10 @@ class _GamificationScreenState extends State<GamificationScreen>
             Tab(text: 'Achievements'),
             Tab(text: 'Statistics'),
           ],
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          onPressed: () => Navigator.of(context).pushReplacementNamed(AppRoutes.home),
         ),
       ),
       body: ListenableBuilder(
@@ -102,37 +114,7 @@ class _GamificationScreenState extends State<GamificationScreen>
               height: _bannerAd!.size.height.toDouble(),
               child: AdWidget(ad: _bannerAd!),
             ),
-          BottomNavigationBar(
-            currentIndex: 2,
-            onTap: (index) {
-              if (index == 2) {
-                // Already on achievements - do nothing
-                return;
-              }
-              switch (index) {
-                case 0:
-                  Navigator.pushReplacementNamed(context, AppRoutes.home);
-                  break;
-                case 1:
-                  Navigator.pushReplacementNamed(context, AppRoutes.category);
-                  break;
-              }
-            },
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home_rounded),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.category_rounded),
-                label: 'Categories',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.emoji_events_rounded),
-                label: 'Achievements',
-              ),
-            ],
-          ),
+          const CustomBottomNavBar(currentIndex: 2),
         ],
       ),
     );

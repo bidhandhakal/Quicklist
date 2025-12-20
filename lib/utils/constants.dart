@@ -22,20 +22,20 @@ class AppConstants {
 // App Colors
 class AppColors {
   // Material 3 inspired colors
-  static const Color primary = Color(0xFF6750A4);
-  static const Color primaryContainer = Color(0xFFEADDFF);
+  static const Color primary = Color(0xFF007AFF);
+  static const Color primaryContainer = Color(0xFFD6E4FF);
   static const Color secondary = Color(0xFF625B71);
   static const Color secondaryContainer = Color(0xFFE8DEF8);
   static const Color tertiary = Color(0xFF7D5260);
   static const Color tertiaryContainer = Color(0xFFFFD8E4);
 
-  static const Color surface = Color(0xFFFFFBFE);
+  static const Color surface = Color(0xFFFFFFFF);
   static const Color surfaceVariant = Color(0xFFE7E0EC);
-  static const Color background = Color(0xFFFFFBFE);
+  static const Color background = Color(0xFFF6F8FB);
   static const Color error = Color(0xFFB3261E);
 
   static const Color onPrimary = Color(0xFFFFFFFF);
-  static const Color onPrimaryContainer = Color(0xFF21005D);
+  static const Color onPrimaryContainer = Color(0xFF001B3D);
   static const Color onSecondary = Color(0xFFFFFFFF);
   static const Color onSecondaryContainer = Color(0xFF1D192B);
   static const Color onTertiary = Color(0xFFFFFFFF);

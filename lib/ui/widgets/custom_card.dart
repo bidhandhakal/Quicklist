@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// Customizable card widget with consistent styling
 class CustomCard extends StatelessWidget {
@@ -108,7 +109,7 @@ class InfoCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: GoogleFonts.manrope(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -117,7 +118,7 @@ class InfoCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle!,
-                    style: TextStyle(
+                    style: GoogleFonts.manrope(
                       fontSize: 14,
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
@@ -177,7 +178,7 @@ class StatsCard extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             value,
-            style: TextStyle(
+            style: GoogleFonts.manrope(
               fontSize: 28,
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.onSurface,
@@ -186,7 +187,7 @@ class StatsCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.manrope(
               fontSize: 14,
               color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
