@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'config/theme.dart';
 import 'config/routes.dart';
@@ -20,6 +21,17 @@ import 'controllers/task_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Fix System UI Overlay
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark, // For light backgrounds
+    systemNavigationBarColor: Colors.transparent, // Or Colors.white if transparent causes issues
+    systemNavigationBarIconBrightness: Brightness.dark,
+  ));
+  
+  // Enable edge-to-edge
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   // Initialize services
   await _initializeServices();

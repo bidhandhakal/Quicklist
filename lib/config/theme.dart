@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../utils/constants.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
+      scaffoldBackgroundColor: AppColors.background,
       colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
         onPrimary: AppColors.onPrimary,
@@ -27,16 +31,21 @@ class AppTheme {
         outlineVariant: AppColors.outlineVariant,
       ),
 
-      // App Bar Theme
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: false,
-        backgroundColor: AppColors.surface,
+        backgroundColor: Colors.transparent, // Make AppBar transparent to show background
         foregroundColor: AppColors.onSurface,
-        titleTextStyle: TextStyle(
+        titleTextStyle: GoogleFonts.manrope(
           fontSize: 22,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: AppColors.onSurface,
+        ),
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.dark,
         ),
       ),
 
@@ -129,78 +138,78 @@ class AppTheme {
       ),
 
       // Text Theme
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(
+      textTheme: TextTheme(
+        displayLarge: GoogleFonts.manrope(
           fontSize: 57,
           fontWeight: FontWeight.w400,
           color: AppColors.onSurface,
         ),
-        displayMedium: TextStyle(
+        displayMedium: GoogleFonts.manrope(
           fontSize: 45,
           fontWeight: FontWeight.w400,
           color: AppColors.onSurface,
         ),
-        displaySmall: TextStyle(
+        displaySmall: GoogleFonts.manrope(
           fontSize: 36,
           fontWeight: FontWeight.w400,
           color: AppColors.onSurface,
         ),
-        headlineLarge: TextStyle(
+        headlineLarge: GoogleFonts.manrope(
           fontSize: 32,
           fontWeight: FontWeight.w600,
           color: AppColors.onSurface,
         ),
-        headlineMedium: TextStyle(
+        headlineMedium: GoogleFonts.manrope(
           fontSize: 28,
           fontWeight: FontWeight.w600,
           color: AppColors.onSurface,
         ),
-        headlineSmall: TextStyle(
+        headlineSmall: GoogleFonts.manrope(
           fontSize: 24,
           fontWeight: FontWeight.w600,
           color: AppColors.onSurface,
         ),
-        titleLarge: TextStyle(
+        titleLarge: GoogleFonts.manrope(
           fontSize: 22,
           fontWeight: FontWeight.w500,
           color: AppColors.onSurface,
         ),
-        titleMedium: TextStyle(
+        titleMedium: GoogleFonts.manrope(
           fontSize: 16,
           fontWeight: FontWeight.w500,
           color: AppColors.onSurface,
         ),
-        titleSmall: TextStyle(
+        titleSmall: GoogleFonts.manrope(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.onSurface,
         ),
-        bodyLarge: TextStyle(
+        bodyLarge: GoogleFonts.manrope(
           fontSize: 16,
           fontWeight: FontWeight.w400,
           color: AppColors.onSurface,
         ),
-        bodyMedium: TextStyle(
+        bodyMedium: GoogleFonts.manrope(
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: AppColors.onSurface,
         ),
-        bodySmall: TextStyle(
+        bodySmall: GoogleFonts.manrope(
           fontSize: 12,
           fontWeight: FontWeight.w400,
           color: AppColors.onSurfaceVariant,
         ),
-        labelLarge: TextStyle(
+        labelLarge: GoogleFonts.manrope(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.onSurface,
         ),
-        labelMedium: TextStyle(
+        labelMedium: GoogleFonts.manrope(
           fontSize: 12,
           fontWeight: FontWeight.w500,
           color: AppColors.onSurface,
         ),
-        labelSmall: TextStyle(
+        labelSmall: GoogleFonts.manrope(
           fontSize: 11,
           fontWeight: FontWeight.w500,
           color: AppColors.onSurface,
