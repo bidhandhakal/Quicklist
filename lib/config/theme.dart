@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../utils/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -34,7 +33,8 @@ class AppTheme {
       appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: false,
-        backgroundColor: Colors.transparent, // Make AppBar transparent to show background
+        backgroundColor:
+            Colors.transparent, // Make AppBar transparent to show background
         foregroundColor: AppColors.onSurface,
         titleTextStyle: GoogleFonts.manrope(
           fontSize: 22,

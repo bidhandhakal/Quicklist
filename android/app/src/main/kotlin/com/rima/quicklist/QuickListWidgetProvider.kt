@@ -1,4 +1,4 @@
-package com.rimaoli.quicklist.dev
+package com.rimaoli.quicklist
 
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider

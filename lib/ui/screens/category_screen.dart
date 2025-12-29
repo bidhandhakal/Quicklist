@@ -4,7 +4,6 @@ import '../../config/routes.dart'; // import already exists, just ensuring order
 import '../../controllers/task_controller.dart';
 import '../../data/dummy_categories.dart';
 import 'package:provider/provider.dart';
-import '../../config/routes.dart';
 import '../widgets/task_tile.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/native_ad_widget.dart';
@@ -17,20 +16,21 @@ class CategoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.dark,
-            systemNavigationBarColor: Colors.transparent,
-            systemNavigationBarIconBrightness: Brightness.dark,
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded),
-            onPressed: () => Navigator.of(context).pushReplacementNamed(AppRoutes.home),
-          ),
-          title: const Text('Categories'),
+      appBar: AppBar(
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.dark,
         ),
-        body: Column(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          onPressed: () =>
+              Navigator.of(context).pushReplacementNamed(AppRoutes.home),
+        ),
+        title: const Text('Categories'),
+      ),
+      body: Column(
         children: [
           Expanded(
             child: Consumer<TaskController>(
