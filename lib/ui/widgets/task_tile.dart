@@ -233,9 +233,7 @@ class TaskTile extends StatelessWidget {
       ),
       child: Icon(
         isLeft ? Icons.check_circle_rounded : Icons.delete_rounded,
-        color: isLeft
-            ? const Color(0xFF007AFF)
-            : AppColors.error,
+        color: isLeft ? const Color(0xFF007AFF) : AppColors.error,
         size: 28,
       ),
     );
@@ -245,8 +243,14 @@ class TaskTile extends StatelessWidget {
     return await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Delete Task', style: GoogleFonts.manrope(fontWeight: FontWeight.bold)),
-            content: Text('Are you sure you want to delete this task?', style: GoogleFonts.manrope()),
+            title: Text(
+              'Delete Task',
+              style: GoogleFonts.manrope(fontWeight: FontWeight.bold),
+            ),
+            content: Text(
+              'Are you sure you want to delete this task?',
+              style: GoogleFonts.manrope(),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
@@ -296,7 +300,9 @@ class TaskTile extends StatelessWidget {
                         : Icons.check_circle_rounded,
                   ),
                   title: Text(
-                    task.isCompleted ? 'Mark as Incomplete' : 'Mark as Complete',
+                    task.isCompleted
+                        ? 'Mark as Incomplete'
+                        : 'Mark as Complete',
                     style: GoogleFonts.manrope(),
                   ),
                   onTap: () {
